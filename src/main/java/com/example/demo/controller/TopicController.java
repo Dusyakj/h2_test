@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.ProblemCreatedDto;
+import com.example.demo.dto.ProblemDto;
+import com.example.demo.dto.TopicDto;
 import com.example.demo.entity.Problem;
 import com.example.demo.entity.Topic;
 import com.example.demo.service.TopicService;
@@ -21,10 +23,9 @@ public class TopicController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Topic> getTopic(@PathVariable long id) {
-        Optional<Topic> topic = topicService.getTopic(id);
-        return topic.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<TopicDto> getTopic(@PathVariable long id) {
+        TopicDto topic = topicService.getTopic(id);
+        return new ResponseEntity<>(topic, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
@@ -34,8 +35,8 @@ public class TopicController {
     }
 
     @PostMapping("/{id}/problems")
-    public ResponseEntity<Problem> addProblem(@PathVariable long id, @RequestBody ProblemCreatedDto problemCreatedDto) {
-        Problem problem = topicService.createProblem(id, problemCreatedDto);
+    public ResponseEntity<ProblemDto> addProblem(@PathVariable long id, @RequestBody ProblemCreatedDto problemCreatedDto) {
+        ProblemDto problem = topicService.createProblem(id, problemCreatedDto);
         return new ResponseEntity<>(problem, HttpStatus.CREATED);
     }
 }

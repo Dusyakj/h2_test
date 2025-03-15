@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.ProblemCreatedDto;
+import com.example.demo.dto.ProblemDto;
+import com.example.demo.dto.TopicDto;
 import com.example.demo.entity.Problem;
 import com.example.demo.entity.Topic;
 import com.example.demo.repository.ProblemRepository;
@@ -22,28 +24,46 @@ public class TopicService {
         this.problemRepository = problemRepository;
     }
 
-    public Optional<Topic> getTopic(long id) {
-        return topicRepository.findById(id);
+    public TopicDto getTopic(Long topicId) {
+        return convertTopicToDto(topicRepository.findById(topicId).orElseThrow(() -> new RuntimeException("Topic not found")));
     }
 
     @Transactional
-    public Problem createProblem(long topicId, ProblemCreatedDto problemCreatedDto) {
+    public ProblemDto createProblem(Long topicId, ProblemCreatedDto problemCreatedDto) {
         Topic topic = topicRepository.findById(topicId).orElseThrow(() -> new RuntimeException("Topic not found"));
 
         Problem problem = new Problem();
         problem.setTitle(problemCreatedDto.getTitle());
+        problem.setDescription(problemCreatedDto.getDescription());
 
         topic.addProblem(problem);
-        return problemRepository.save(problem);
+        return convertProblemToDto(problemRepository.save(problem));
     }
 
-    public void deleteTopic(long id) {
-        Topic topic = topicRepository.findById(id).orElseThrow(() -> new RuntimeException("Topic not found"));
+    public void deleteTopic(Long topicId) {
+        Topic topic = topicRepository.findById(topicId).orElseThrow(() -> new RuntimeException("Topic not found"));
         for (Problem problem : topic.getProblems()) {
             problem.setTopic(null);
         }
         topic.getCourse().getTopics().remove(topic);
         topicRepository.delete(topic);
+    }
+
+    private TopicDto convertTopicToDto(Topic topic) {
+        TopicDto topicDto = new TopicDto();
+        topicDto.setId(topic.getId());
+        topicDto.setTitle(topic.getTitle());
+        topicDto.setText(topic.getText());
+        topicDto.setProblems(topic.getProblems());
+        return topicDto;
+    }
+
+    private ProblemDto convertProblemToDto(Problem problem) {
+        ProblemDto problemDto = new ProblemDto();
+        problemDto.setId(problem.getId());
+        problemDto.setTitle(problem.getTitle());
+        problemDto.setDescription(problem.getDescription());
+        return problemDto;
     }
 
 }

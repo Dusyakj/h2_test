@@ -11,9 +11,9 @@ public class StudentCreatedDto {
     @NotBlank
     private String firstName;
     @NotBlank
-    private String login;
-    @NotBlank
     private String lastName;
+    @NotBlank
+    private String login;
     @NotBlank
     private String phoneNumber;
 }

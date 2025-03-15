@@ -2,11 +2,12 @@ package com.example.demo.service;
 
 import com.example.demo.dto.LinkProblemDto;
 import com.example.demo.dto.StudentCreatedDto;
+import com.example.demo.dto.StudentDto;
 import com.example.demo.entity.Course;
-import com.example.demo.entity.Student;
 import com.example.demo.entity.Problem;
-import com.example.demo.repository.StudentRepository;
+import com.example.demo.entity.Student;
 import com.example.demo.repository.ProblemRepository;
+import com.example.demo.repository.StudentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,21 +23,21 @@ public class StudentService {
         this.problemRepository = problemRepository;
     }
 
-    public Student createPerson(StudentCreatedDto studentCreatedDto) {
+    public StudentDto createStudent(StudentCreatedDto studentCreatedDto) {
         Student student = new Student();
         student.setFirstName(studentCreatedDto.getFirstName());
         student.setLogin(studentCreatedDto.getLogin());
         student.setLastName(studentCreatedDto.getLastName());
         student.setPhoneNumber(studentCreatedDto.getPhoneNumber());
-        return studentRepository.save(student);
+        return convertStudentToDto(studentRepository.save(student));
     }
 
-    public Optional<Student> getPerson(long id) {
-        return studentRepository.findById(id);
+    public StudentDto getStudent(Long studentId) {
+        return convertStudentToDto(studentRepository.findById(studentId).orElseThrow(() -> new RuntimeException("Student not found")));
     }
 
     @Transactional
-    public void addProblemToPerson(LinkProblemDto linkProblemDto) {
+    public void addProblemToStudent(LinkProblemDto linkProblemDto) {
         Student student = studentRepository.findById(linkProblemDto.getStudentId()).orElseThrow(() -> new RuntimeException("Student not found"));
         Problem problem = problemRepository.findById(linkProblemDto.getProblemId()).orElseThrow(() -> new RuntimeException("Problem not found"));
 
@@ -45,7 +46,7 @@ public class StudentService {
     }
 
     @Transactional
-    public void deleteStudent(long studentId) {
+    public void deleteStudent(Long studentId) {
         Student student = studentRepository.findById(studentId).orElseThrow(() -> new RuntimeException("Student not found"));
         for (Problem problem : student.getProblems()) {
             problem.getStudents().remove(student);
@@ -56,5 +57,16 @@ public class StudentService {
         }
 
         studentRepository.delete(student);
+    }
+
+    private StudentDto convertStudentToDto(Student student) {
+        StudentDto studentDto = new StudentDto();
+        studentDto.setId(student.getId());
+        studentDto.setLogin(student.getLogin());
+        studentDto.setFirstName(student.getFirstName());
+        studentDto.setLastName(student.getLastName());
+        studentDto.setPhoneNumber(student.getPhoneNumber());
+        studentDto.setSolvedProblems(student.getProblems());
+        return studentDto;
     }
 }

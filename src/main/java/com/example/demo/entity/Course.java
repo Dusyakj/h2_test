@@ -40,7 +40,7 @@ public class Course {
         topic.setCourse(this);
     }
 
-    public void addPerson(Student student) {
+    public void addStudent(Student student) {
         students.add(student);
         student.getCourses().add(this);
     }

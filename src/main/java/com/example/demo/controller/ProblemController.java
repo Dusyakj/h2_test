@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.ProblemDto;
 import com.example.demo.entity.Problem;
 import com.example.demo.service.ProblemService;
 import org.springframework.http.HttpStatus;
@@ -19,10 +20,9 @@ public class ProblemController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Problem> getProblem(@PathVariable long id) {
-        Optional<Problem> problem = problemService.getProblem(id);
-        return problem.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<ProblemDto> getProblem(@PathVariable long id) {
+        ProblemDto problem = problemService.getProblem(id);
+        return new ResponseEntity<>(problem, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

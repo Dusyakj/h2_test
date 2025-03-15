@@ -1,7 +1,9 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.CourseCreatedDto;
+import com.example.demo.dto.CourseDto;
 import com.example.demo.dto.TopicCreatedDto;
+import com.example.demo.dto.TopicDto;
 import com.example.demo.entity.Course;
 import com.example.demo.entity.Topic;
 import com.example.demo.service.CourseService;
@@ -23,20 +25,19 @@ public class CourseController {
     }
 
     @PostMapping()
-    public ResponseEntity<Course> addCourse(@Valid @RequestBody CourseCreatedDto courseCreatedDto) {
-        Course course = courseService.createCourse(courseCreatedDto);
+    public ResponseEntity<CourseDto> addCourse(@Valid @RequestBody CourseCreatedDto courseCreatedDto) {
+        CourseDto course = courseService.createCourse(courseCreatedDto);
         return new ResponseEntity<>(course, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Course> getCourse(@PathVariable long id) {
-        Optional<Course> course = courseService.getCourse(id);
-        return course.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    public ResponseEntity<CourseDto> getCourse(@PathVariable Long id) {
+        CourseDto course = courseService.getCourse(id);
+        return new ResponseEntity<>(course, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCourse(@PathVariable long id) {
+    public ResponseEntity<Void> deleteCourse(@PathVariable Long id) {
         courseService.deleteCourse(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -53,9 +54,9 @@ public class CourseController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/{id}/topic")
-    public ResponseEntity<Topic> addProblem(@PathVariable long id, @RequestBody TopicCreatedDto topicCreatedDto) {
-        Topic topic = courseService.createTopic(id, topicCreatedDto);
+    @PostMapping("/{id}/topics")
+    public ResponseEntity<TopicDto> addProblem(@PathVariable Long id, @RequestBody TopicCreatedDto topicCreatedDto) {
+        TopicDto topic = courseService.createTopic(id, topicCreatedDto);
         return new ResponseEntity<>(topic, HttpStatus.CREATED);
     }
 
