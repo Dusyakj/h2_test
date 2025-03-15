@@ -4,15 +4,11 @@ import com.example.demo.dto.CourseCreatedDto;
 import com.example.demo.dto.CourseDto;
 import com.example.demo.dto.TopicCreatedDto;
 import com.example.demo.dto.TopicDto;
-import com.example.demo.entity.Course;
-import com.example.demo.entity.Topic;
 import com.example.demo.service.CourseService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/courses")
@@ -42,20 +38,20 @@ public class CourseController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PostMapping("/{courseId}/enroll/{personId}")
-    public ResponseEntity<Void> addPersonToCourse(@PathVariable Long courseId, @PathVariable Long personId) {
-        courseService.addStudentToCourse(courseId, personId);
+    @PostMapping("/{courseId}/enroll/{studentId}")
+    public ResponseEntity<Void> addStudentToCourse(@PathVariable Long courseId, @PathVariable Long studentId) {
+        courseService.addStudentToCourse(courseId, studentId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/{courseId}/unenroll/{personId}")
-    public ResponseEntity<Void> deletePersonFromCourse(@PathVariable Long courseId, @PathVariable Long personId) {
-        courseService.deleteStudentFromCourse(courseId, personId);
+    @PostMapping("/{courseId}/unenroll/{studentId}")
+    public ResponseEntity<Void> deleteStudentFromCourse(@PathVariable Long courseId, @PathVariable Long studentId) {
+        courseService.deleteStudentFromCourse(courseId, studentId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/{id}/topics")
-    public ResponseEntity<TopicDto> addProblem(@PathVariable Long id, @RequestBody TopicCreatedDto topicCreatedDto) {
+    public ResponseEntity<TopicDto> addTopic(@PathVariable Long id, @RequestBody TopicCreatedDto topicCreatedDto) {
         TopicDto topic = courseService.createTopic(id, topicCreatedDto);
         return new ResponseEntity<>(topic, HttpStatus.CREATED);
     }
