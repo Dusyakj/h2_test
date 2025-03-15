@@ -24,7 +24,8 @@ public class Problem {
     @JsonIgnore
     private Set<Person> persons = new HashSet<>();
 
-    @ManyToMany(mappedBy = "problems")
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinColumn(name = "topic_id", referencedColumnName = "id")
     @JsonIgnore
-    private Set<Topic> topics = new HashSet<>();
+    private Topic topic;
 }

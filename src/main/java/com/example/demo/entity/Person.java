@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,6 +29,11 @@ public class Person {
             inverseJoinColumns = @JoinColumn(name = "problem_id")
     )
     private Set<Problem> problems = new HashSet<>();
+
+    @ToString.Exclude
+    @ManyToMany(mappedBy = "persons")
+    @JsonIgnore
+    private Set<Course> courses = new HashSet<>();
 
     public void addProblem(Problem problem) {
         problems.add(problem);

@@ -31,11 +31,11 @@ public class PersonService {
     }
 
     @Transactional
-    public Person addProblemToPerson(Long personId, Long problemId) {
+    public void addProblemToPerson(Long personId, Long problemId) {
         Person person = personRepository.findById(personId).orElseThrow(() -> new RuntimeException("Person not found"));
         Problem problem = problemRepository.findById(problemId).orElseThrow(() -> new RuntimeException("Problem not found"));
 
         person.addProblem(problem);
-        return personRepository.save(person);
+        personRepository.save(person);
     }
 }

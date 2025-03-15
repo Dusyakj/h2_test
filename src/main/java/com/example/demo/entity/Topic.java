@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,16 +23,21 @@ public class Topic {
     private String text;
 
     @ToString.Exclude
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(
-            name = "topic_problem",
-            joinColumns = @JoinColumn(name = "topic_id"),
-            inverseJoinColumns = @JoinColumn(name = "problem_id")
-    )
+    @OneToMany(mappedBy = "topic")
+//    @JoinTable(
+//            name = "topic_problem",
+//            joinColumns = @JoinColumn(name = "topic_id"),
+//            inverseJoinColumns = @JoinColumn(name = "problem_id")
+//    )
     private Set<Problem> problems = new HashSet<>();
+
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinColumn(name = "course_id", referencedColumnName = "id")
+    @JsonIgnore
+    private Course course;
 
     public void addProblem(Problem problem) {
         problems.add(problem);
-        problem.getTopics().add(this);
+        problem.setTopic(this);
     }
 }

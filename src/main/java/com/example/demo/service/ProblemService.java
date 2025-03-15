@@ -38,9 +38,7 @@ public class ProblemService {
             for (Person person: problem.getPersons()) {
                 person.getProblems().remove(problem);
             }
-            for (Topic topic: problem.getTopics()) {
-                topic.getProblems().remove(problem);
-            }
+//            problem.getTopic().getProblems().remove(problem);
             problemRepository.delete(problem);
         }
     }
