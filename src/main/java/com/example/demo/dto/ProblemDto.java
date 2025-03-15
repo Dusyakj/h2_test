@@ -10,7 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProblemDto {
-
-    private long id;
+    private Long id;
+    private long topicId;
     private String title;
 }

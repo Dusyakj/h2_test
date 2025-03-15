@@ -6,39 +6,36 @@ import com.example.demo.entity.Problem;
 import com.example.demo.repository.PersonRepository;
 import com.example.demo.repository.ProblemRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Service
 public class PersonService {
-    private PersonRepository personRepository;
-    
-    private ProblemRepository problemRepository;
+    private final PersonRepository personRepository;
+    private final ProblemRepository problemRepository;
 
     public PersonService(PersonRepository personRepository, ProblemRepository problemRepository) {
         this.personRepository = personRepository;
         this.problemRepository = problemRepository;
     }
 
-    public Person createPerson(PersonDto person) {
-        Person person1 = new Person();
-        person1.setName(person.getName());
-        return personRepository.save(person1);
+    public Person createPerson(PersonDto personDto) {
+        Person person = new Person();
+        person.setName(personDto.getName());
+        return personRepository.save(person);
     }
 
     public Optional<Person> getPerson(long id) {
         return personRepository.findById(id);
     }
 
+    @Transactional
     public Person addProblemToPerson(Long personId, Long problemId) {
-        Person person = personRepository.findById(personId).orElse(null);
-        Problem problem = problemRepository.findById(problemId).orElse(null);
+        Person person = personRepository.findById(personId).orElseThrow(() -> new RuntimeException("Person not found"));
+        Problem problem = problemRepository.findById(problemId).orElseThrow(() -> new RuntimeException("Problem not found"));
 
-        if (person != null && problem != null) {
-            person.addProblem(problem);
-            personRepository.save(person);
-        }
-
-        return person;
+        person.addProblem(problem);
+        return personRepository.save(person);
     }
 }

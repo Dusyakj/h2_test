@@ -1,15 +1,17 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Setter
 @Getter
 @Entity
+@Table(name = "problem")
 public class Problem {
 
     @Id
@@ -18,5 +20,11 @@ public class Problem {
 
     private String title;
 
+    @ManyToMany(mappedBy = "problems")
+    @JsonIgnore
+    private Set<Person> persons = new HashSet<>();
 
+    @ManyToMany(mappedBy = "problems")
+    @JsonIgnore
+    private Set<Topic> topics = new HashSet<>();
 }

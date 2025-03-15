@@ -1,34 +1,47 @@
 package com.example.demo.service;
 
-
 import com.example.demo.dto.ProblemDto;
+import com.example.demo.entity.Person;
 import com.example.demo.entity.Problem;
-import com.example.demo.repository.PersonRepository;
+import com.example.demo.entity.Topic;
 import com.example.demo.repository.ProblemRepository;
+import com.example.demo.repository.TopicRepository;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProblemService {
-    private ProblemRepository problemRepository;
 
-    private PersonRepository personRepository;
+    private final ProblemRepository problemRepository;
+    private final TopicRepository topicRepository;
 
-    public ProblemService(PersonRepository personRepository, ProblemRepository problemRepository) {
-        this.personRepository = personRepository;
+    public ProblemService(ProblemRepository problemRepository, TopicRepository topicRepository) {
         this.problemRepository = problemRepository;
+        this.topicRepository = topicRepository;
     }
 
-    public Problem createProblem(ProblemDto problem) {
-        Problem problem1 = new Problem();
-        problem1.setTitle(problem.getTitle());
-        return problemRepository.save(problem1);
+    @Transactional
+    public Problem createProblem(ProblemDto problemDto) {
+        Topic topic = topicRepository.findById(problemDto.getTopicId()).orElseThrow(() -> new RuntimeException("Topic not found"));
+
+        Problem problem = new Problem();
+        problem.setTitle(problemDto.getTitle());
+
+        topic.addProblem(problem);
+        return problemRepository.save(problem);
     }
 
+    @Transactional
     public void deleteProblem(Long id) {
         Problem problem = problemRepository.findById(id).orElse(null);
         if (problem != null) {
-            problemRepository.deleteById(id);
+            for (Person person: problem.getPersons()) {
+                person.getProblems().remove(problem);
+            }
+            for (Topic topic: problem.getTopics()) {
+                topic.getProblems().remove(problem);
+            }
+            problemRepository.delete(problem);
         }
     }
 }
