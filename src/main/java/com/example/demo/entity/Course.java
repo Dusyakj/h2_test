@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -17,15 +18,18 @@ public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @NotBlank
     private String title;
+    @NotBlank
+    private String description;
 
     @ToString.Exclude
     @ManyToMany
     @JoinTable(name = "course_student",
             joinColumns = @JoinColumn(name = "course_id"),
-            inverseJoinColumns = @JoinColumn(name = "person_id")
+            inverseJoinColumns = @JoinColumn(name = "student_id")
     )
-    private Set<Person> persons = new HashSet<>();
+    private Set<Student> students = new HashSet<>();
 
     @ToString.Exclude
     @OneToMany(mappedBy = "course")
@@ -36,8 +40,13 @@ public class Course {
         topic.setCourse(this);
     }
 
-    public void addPerson(Person person) {
-        persons.add(person);
-        person.getCourses().add(this);
+    public void addPerson(Student student) {
+        students.add(student);
+        student.getCourses().add(this);
+    }
+
+    public void deleteStudent(Student student) {
+        students.remove(student);
+        student.getCourses().remove(this);
     }
 }

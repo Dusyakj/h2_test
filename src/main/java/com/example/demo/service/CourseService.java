@@ -1,12 +1,12 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.CourseDto;
-import com.example.demo.dto.TopicDto;
+import com.example.demo.dto.CourseCreatedDto;
+import com.example.demo.dto.TopicCreatedDto;
 import com.example.demo.entity.Course;
-import com.example.demo.entity.Person;
+import com.example.demo.entity.Student;
 import com.example.demo.entity.Topic;
 import com.example.demo.repository.CourseRepository;
-import com.example.demo.repository.PersonRepository;
+import com.example.demo.repository.StudentRepository;
 import com.example.demo.repository.TopicRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,28 +16,29 @@ import java.util.Optional;
 public class CourseService {
 
     private final CourseRepository courseRepository;
-    private final PersonRepository personRepository;
+    private final StudentRepository studentRepository;
     private final TopicRepository topicRepository;
 
-    public CourseService(CourseRepository courseRepository, PersonRepository personRepository, TopicRepository topicRepository) {
+    public CourseService(CourseRepository courseRepository, StudentRepository studentRepository, TopicRepository topicRepository) {
         this.courseRepository = courseRepository;
-        this.personRepository = personRepository;
+        this.studentRepository = studentRepository;
         this.topicRepository = topicRepository;
     }
 
-    public Topic createTopic(long id, TopicDto topicDto) {
+    public Topic createTopic(long id, TopicCreatedDto topicCreatedDto) {
         Course course = courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Course not found"));
         Topic topic = new Topic();
-        topic.setText(topicDto.getText());
-        topic.setTitle(topicDto.getTitle());
+        topic.setText(topicCreatedDto.getText());
+        topic.setTitle(topicCreatedDto.getTitle());
 
         course.addTopic(topic);
         return topicRepository.save(topic);
     }
 
-    public Course createCourse(CourseDto courseDto) {
+    public Course createCourse(CourseCreatedDto courseCreatedDto) {
         Course course = new Course();
-        course.setTitle(courseDto.getTitle());
+        course.setTitle(courseCreatedDto.getTitle());
+        course.setDescription(courseCreatedDto.getDescription());
         return courseRepository.save(course);
     }
 
@@ -46,17 +47,25 @@ public class CourseService {
     }
 
     public void addStudentToCourse(long courseId, long personId) {
-        Person person = personRepository.findById(personId).orElseThrow(() -> new RuntimeException("Person not found"));
+        Student student = studentRepository.findById(personId).orElseThrow(() -> new RuntimeException("Student not found"));
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found"));
 
-        course.addPerson(person);
+        course.addPerson(student);
+        courseRepository.save(course);
+    }
+
+    public void deleteStudentFromCourse(long courseId, long personId) {
+        Student student = studentRepository.findById(personId).orElseThrow(() -> new RuntimeException("Student not found"));
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found"));
+
+        course.deleteStudent(student);
         courseRepository.save(course);
     }
 
     public void deleteCourse(long id) {
-        Course course = courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Topic not found"));
-        for (Person person : course.getPersons()) {
-            person.getCourses().remove(course);
+        Course course = courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Course not found"));
+        for (Student student : course.getStudents()) {
+            student.getCourses().remove(course);
         }
 
         for (Topic topic : course.getTopics()) {

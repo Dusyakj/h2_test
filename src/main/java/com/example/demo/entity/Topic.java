@@ -2,6 +2,7 @@ package com.example.demo.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -19,16 +20,14 @@ public class Topic {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+
+    @NotBlank
     private String title;
+    @NotBlank
     private String text;
 
     @ToString.Exclude
     @OneToMany(mappedBy = "topic")
-//    @JoinTable(
-//            name = "topic_problem",
-//            joinColumns = @JoinColumn(name = "topic_id"),
-//            inverseJoinColumns = @JoinColumn(name = "problem_id")
-//    )
     private Set<Problem> problems = new HashSet<>();
 
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
