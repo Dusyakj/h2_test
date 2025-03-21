@@ -1,11 +1,10 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.LinkProblemDto;
-import com.example.demo.dto.StudentCreatedDto;
-import com.example.demo.dto.StudentDto;
+import com.example.demo.dto.*;
 import com.example.demo.entity.Course;
 import com.example.demo.entity.Problem;
 import com.example.demo.entity.Student;
+import com.example.demo.enums.Role;
 import com.example.demo.repository.ProblemRepository;
 import com.example.demo.repository.StudentRepository;
 import org.springframework.stereotype.Service;
@@ -18,18 +17,29 @@ public class StudentService {
     private final StudentRepository studentRepository;
     private final ProblemRepository problemRepository;
 
-    public StudentService(StudentRepository studentRepository, ProblemRepository problemRepository) {
+    private final AuthService authService;
+
+    public StudentService(StudentRepository studentRepository, ProblemRepository problemRepository, AuthService authService) {
         this.studentRepository = studentRepository;
         this.problemRepository = problemRepository;
+        this.authService = authService;
     }
 
-    public StudentDto createStudent(StudentCreatedDto studentCreatedDto) {
+    @Transactional
+    public UserDto createStudent(String token, StudentCreatedDto studentCreatedDto) {
+        UserCreateDto userCreateDto = new UserCreateDto();
+        userCreateDto.setLogin(studentCreatedDto.getLogin());
+        userCreateDto.setRole(Role.STUDENT);
+        userCreateDto.setPassword(authService.generatePassword());
+        UserDto userDto = authService.creteUser(userCreateDto);
+
         Student student = new Student();
         student.setFirstName(studentCreatedDto.getFirstName());
         student.setLogin(studentCreatedDto.getLogin());
         student.setLastName(studentCreatedDto.getLastName());
         student.setPhoneNumber(studentCreatedDto.getPhoneNumber());
-        return convertStudentToDto(studentRepository.save(student));
+        studentRepository.save(student);
+        return userDto;
     }
 
     public StudentDto getStudent(Long studentId) {

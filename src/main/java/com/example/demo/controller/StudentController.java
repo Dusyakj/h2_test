@@ -3,9 +3,10 @@ package com.example.demo.controller;
 import com.example.demo.dto.LinkProblemDto;
 import com.example.demo.dto.StudentCreatedDto;
 import com.example.demo.dto.StudentDto;
-import com.example.demo.entity.Student;
+import com.example.demo.dto.UserDto;
 import com.example.demo.service.StudentService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,9 +22,9 @@ public class StudentController {
     }
 
     @PostMapping()
-    public ResponseEntity<StudentDto> addPerson(@Valid @RequestBody StudentCreatedDto studentCreatedDto) {
-        StudentDto student = studentService.createStudent(studentCreatedDto);
-        return new ResponseEntity<>(student, HttpStatus.CREATED);
+    public ResponseEntity<UserDto> addPerson(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @Valid @RequestBody StudentCreatedDto studentCreatedDto) {
+        UserDto userDto = studentService.createStudent(token, studentCreatedDto);
+        return new ResponseEntity<>(userDto, HttpStatus.CREATED);
     }
 
     @PatchMapping()
