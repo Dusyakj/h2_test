@@ -8,9 +8,21 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class CommonExceptionHandler {
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorDto> handleException(RuntimeException e) {
+    @ExceptionHandler(NotFoundRuntimeException.class)
+    public ResponseEntity<ErrorDto> handleNotFoundException(NotFoundRuntimeException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorDto(e.getMessage()));
+                .body(new ErrorDto(404, e.getMessage()));
+    }
+
+    @ExceptionHandler(PermissionDeniedRuntimeException.class)
+    public ResponseEntity<ErrorDto> handlePermissionDeniedException(PermissionDeniedRuntimeException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErrorDto(403, e.getMessage()));
+    }
+
+    @ExceptionHandler(BadRequestRuntimeException.class)
+    public ResponseEntity<ErrorDto> handleBadRequestException(BadRequestRuntimeException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorDto(400, e.getMessage()));
     }
 }

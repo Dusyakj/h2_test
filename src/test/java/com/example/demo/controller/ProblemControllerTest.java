@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.ProblemDto;
+import com.example.demo.service.AuthService;
 import com.example.demo.service.ProblemService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Base64;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -18,8 +21,14 @@ class ProblemControllerTest {
     @Mock
     private ProblemService problemService;
 
+    @Mock
+    private AuthService authService;
+
     @InjectMocks
     private ProblemController problemController;
+
+    String adminToken = Base64.getEncoder().encodeToString("admin:admin".getBytes());
+
 
     @BeforeEach
     void setUp() {
@@ -35,7 +44,7 @@ class ProblemControllerTest {
 
         when(problemService.getProblem(1L)).thenReturn(problemDto);
 
-        ResponseEntity<ProblemDto> response = problemController.getProblem(1L);
+        ResponseEntity<ProblemDto> response = problemController.getProblem(adminToken, 1L);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(problemDto, response.getBody());
@@ -43,7 +52,7 @@ class ProblemControllerTest {
 
     @Test
     void testDeleteProblem() {
-        ResponseEntity<Void> response = problemController.deleteProblem(1L);
+        ResponseEntity<Void> response = problemController.deleteProblem(adminToken, 1L);
 
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }

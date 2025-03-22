@@ -1,7 +1,8 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.StudentCreatedDto;
+import com.example.demo.dto.StudentCreateDto;
 import com.example.demo.dto.StudentDto;
+import com.example.demo.dto.UserDto;
 import com.example.demo.entity.Student;
 import com.example.demo.repository.StudentRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,14 +11,21 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Base64;
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 class StudentServiceTest {
 
     @Mock
     private StudentRepository studentRepository;
+
+    @Mock
+    private AuthService authService;
 
     @InjectMocks
     private StudentService studentService;
@@ -27,13 +35,15 @@ class StudentServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
+    String adminToken = Base64.getEncoder().encodeToString("admin:admin".getBytes());
+
     @Test
     void testCreateStudent() {
-        StudentCreatedDto studentCreatedDto = new StudentCreatedDto();
-        studentCreatedDto.setFirstName("Ivan");
-        studentCreatedDto.setLastName("Pupkin");
-        studentCreatedDto.setLogin("A");
-        studentCreatedDto.setPhoneNumber("8800553535");
+        StudentCreateDto studentCreateDto = new StudentCreateDto();
+        studentCreateDto.setFirstName("Ivan");
+        studentCreateDto.setLastName("Pupkin");
+        studentCreateDto.setLogin("A");
+        studentCreateDto.setPhoneNumber("8800553535");
 
         Student student = new Student();
         student.setId(1L);
@@ -42,9 +52,10 @@ class StudentServiceTest {
         student.setLogin("A");
         student.setPhoneNumber("8800553535");
 
-        when(studentRepository.save(any(Student.class))).thenReturn(student);
 
-        StudentDto result = studentService.createStudent(studentCreatedDto);
+        UserDto user = studentService.createStudent(adminToken, studentCreateDto);
+        when(studentRepository.findById(1L)).thenReturn(Optional.of(student));
+        StudentDto result = studentService.getStudent(1L);
 
         assertEquals(student.getId(), result.getId());
         assertEquals(student.getFirstName(), result.getFirstName());

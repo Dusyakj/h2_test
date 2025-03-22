@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.CourseCreatedDto;
+import com.example.demo.dto.CourseCreateDto;
 import com.example.demo.dto.CourseDto;
 import com.example.demo.entity.Course;
 import com.example.demo.repository.CourseRepository;
@@ -31,9 +31,9 @@ class CourseServiceTest {
 
     @Test
     void testCreateCourse() {
-        CourseCreatedDto courseCreatedDto = new CourseCreatedDto();
-        courseCreatedDto.setTitle("Test Course");
-        courseCreatedDto.setDescription("Test Description");
+        CourseCreateDto courseCreateDto = new CourseCreateDto();
+        courseCreateDto.setTitle("Test Course");
+        courseCreateDto.setDescription("Test Description");
 
         Course course = new Course();
         course.setId(1L);
@@ -42,7 +42,7 @@ class CourseServiceTest {
 
         when(courseRepository.save(any(Course.class))).thenReturn(course);
 
-        CourseDto result = courseService.createCourse(courseCreatedDto);
+        CourseDto result = courseService.createCourse(courseCreateDto);
 
         assertEquals(course.getId(), result.getId());
         assertEquals(course.getTitle(), result.getTitle());

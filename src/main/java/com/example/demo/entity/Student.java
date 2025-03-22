@@ -3,6 +3,7 @@ package com.example.demo.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -20,10 +21,13 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotBlank
+    @Size(max = 100)
     private String firstName;
     @NotBlank
+    @Size(max = 100)
     private String lastName;
     @NotBlank
+    @Size(max = 30)
     private String login;
     @NotBlank
     private String phoneNumber;

@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.SingInDto;
+import com.example.demo.dto.SignInDto;
 import com.example.demo.dto.TokenDto;
 import com.example.demo.dto.UserCreateDto;
 import com.example.demo.dto.UserDto;
@@ -21,15 +21,15 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @PostMapping("/singUp")
-    public ResponseEntity<UserDto> createUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @Valid @RequestBody UserCreateDto userCreateDto) {
+    @PostMapping("/signUp")
+    public ResponseEntity<UserDto> signUp(@RequestHeader(HttpHeaders.AUTHORIZATION) String token, @Valid @RequestBody UserCreateDto userCreateDto) {
         UserDto user = authService.createUserByAdmin(token, userCreateDto);
         return new ResponseEntity<>(user,HttpStatus.CREATED);
     }
 
-    @PostMapping("/singIn")
-    public ResponseEntity<TokenDto> singIn(@Valid @RequestBody SingInDto singInDto) {
-        TokenDto token = authService.singIn(singInDto);
+    @PostMapping("/signIn")
+    public ResponseEntity<TokenDto> signIn(@Valid @RequestBody SignInDto signInDto) {
+        TokenDto token = authService.signIn(signInDto);
         return new ResponseEntity<>(token, HttpStatus.OK);
     }
 

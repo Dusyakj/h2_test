@@ -4,6 +4,7 @@ import com.example.demo.dto.ProblemDto;
 import com.example.demo.entity.Problem;
 import com.example.demo.entity.Student;
 import com.example.demo.entity.Topic;
+import com.example.demo.exception.NotFoundRuntimeException;
 import com.example.demo.repository.ProblemRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +19,7 @@ public class ProblemService {
     }
 
     public ProblemDto getProblem(Long id) {
-        return convertProblemToDto(problemRepository.findById(id).orElseThrow(() -> new RuntimeException("Problem not found")));
+        return convertProblemToDto(problemRepository.findById(id).orElseThrow(() -> new NotFoundRuntimeException("Problem not found")));
     }
 
     @Transactional

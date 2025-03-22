@@ -1,12 +1,13 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.CourseCreatedDto;
+import com.example.demo.dto.CourseCreateDto;
 import com.example.demo.dto.CourseDto;
-import com.example.demo.dto.TopicCreatedDto;
+import com.example.demo.dto.TopicCreateDto;
 import com.example.demo.dto.TopicDto;
 import com.example.demo.entity.Course;
 import com.example.demo.entity.Student;
 import com.example.demo.entity.Topic;
+import com.example.demo.exception.NotFoundRuntimeException;
 import com.example.demo.repository.CourseRepository;
 import com.example.demo.repository.StudentRepository;
 import com.example.demo.repository.TopicRepository;
@@ -29,38 +30,38 @@ public class CourseService {
         this.topicService = topicService;
     }
 
-    public TopicDto createTopic(Long courseId, TopicCreatedDto topicCreatedDto) {
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found"));
+    public TopicDto createTopic(Long courseId, TopicCreateDto topicCreateDto) {
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new NotFoundRuntimeException("Course not found"));
         Topic topic = new Topic();
-        topic.setText(topicCreatedDto.getText());
-        topic.setTitle(topicCreatedDto.getTitle());
+        topic.setText(topicCreateDto.getText());
+        topic.setTitle(topicCreateDto.getTitle());
 
         course.addTopic(topic);
         return convertTopicToDto((topicRepository.save(topic)));
     }
 
-    public CourseDto createCourse(CourseCreatedDto courseCreatedDto) {
+    public CourseDto createCourse(CourseCreateDto courseCreateDto) {
         Course course = new Course();
-        course.setTitle(courseCreatedDto.getTitle());
-        course.setDescription(courseCreatedDto.getDescription());
+        course.setTitle(courseCreateDto.getTitle());
+        course.setDescription(courseCreateDto.getDescription());
         return convertCourseToDto(courseRepository.save(course));
     }
 
     public CourseDto getCourse(Long courseId) {
-        return convertCourseToDto(courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found")));
+        return convertCourseToDto(courseRepository.findById(courseId).orElseThrow(() -> new NotFoundRuntimeException("Course not found")));
     }
 
     public void addStudentToCourse(Long courseId, Long personId) {
-        Student student = studentRepository.findById(personId).orElseThrow(() -> new RuntimeException("Student not found"));
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found"));
+        Student student = studentRepository.findById(personId).orElseThrow(() -> new NotFoundRuntimeException("Student not found"));
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new NotFoundRuntimeException("Course not found"));
 
         course.addStudent(student);
         courseRepository.save(course);
     }
 
     public void deleteStudentFromCourse(Long courseId, Long personId) {
-        Student student = studentRepository.findById(personId).orElseThrow(() -> new RuntimeException("Student not found"));
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new RuntimeException("Course not found"));
+        Student student = studentRepository.findById(personId).orElseThrow(() -> new NotFoundRuntimeException("Student not found"));
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new NotFoundRuntimeException("Course not found"));
 
         course.deleteStudent(student);
         courseRepository.save(course);
@@ -68,7 +69,7 @@ public class CourseService {
 
     @Transactional
     public void deleteCourse(Long id) {
-        Course course = courseRepository.findById(id).orElseThrow(() -> new RuntimeException("Course not found"));
+        Course course = courseRepository.findById(id).orElseThrow(() -> new NotFoundRuntimeException("Course not found"));
         for (Student student : course.getStudents()) {
             student.getCourses().remove(course);
         }

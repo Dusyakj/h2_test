@@ -2,6 +2,7 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -19,8 +20,10 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @NotBlank
+    @Size(max = 100)
     private String title;
     @NotBlank
+    @Size(max = 3000)
     private String description;
 
     @ToString.Exclude
