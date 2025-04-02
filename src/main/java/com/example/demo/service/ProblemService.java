@@ -1,34 +1,48 @@
 package com.example.demo.service;
 
-
 import com.example.demo.dto.ProblemDto;
 import com.example.demo.entity.Problem;
-import com.example.demo.repository.PersonRepository;
+import com.example.demo.entity.Student;
+import com.example.demo.entity.Topic;
+import com.example.demo.exception.NotFoundRuntimeException;
 import com.example.demo.repository.ProblemRepository;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProblemService {
-    private ProblemRepository problemRepository;
 
-    private PersonRepository personRepository;
+    private final ProblemRepository problemRepository;
 
-    public ProblemService(PersonRepository personRepository, ProblemRepository problemRepository) {
-        this.personRepository = personRepository;
+    public ProblemService(ProblemRepository problemRepository) {
         this.problemRepository = problemRepository;
     }
 
-    public Problem createProblem(ProblemDto problem) {
-        Problem problem1 = new Problem();
-        problem1.setTitle(problem.getTitle());
-        return problemRepository.save(problem1);
+    public ProblemDto getProblem(Long id) {
+        return convertProblemToDto(problemRepository.findById(id).orElseThrow(() -> new NotFoundRuntimeException("Problem not found")));
     }
 
+    @Transactional
     public void deleteProblem(Long id) {
         Problem problem = problemRepository.findById(id).orElse(null);
         if (problem != null) {
-            problemRepository.deleteById(id);
+            for (Student student : problem.getStudents()) {
+                student.getProblems().remove(problem);
+            }
+
+            Topic topic = problem.getTopic();
+            if (topic != null) {
+                topic.getProblems().remove(problem);
+            }
+            problemRepository.delete(problem);
         }
+    }
+
+    private ProblemDto convertProblemToDto(Problem problem) {
+        ProblemDto problemDto = new ProblemDto();
+        problemDto.setId(problem.getId());
+        problemDto.setTitle(problem.getTitle());
+        problemDto.setDescription(problem.getDescription());
+        return problemDto;
     }
 }
